@@ -1,26 +1,33 @@
 import json
 
-def convert_format(source_data):
-    target_data = []
-    for item in source_data:
-        # 构建新的对话格式
-        new_convo = {
-            "conversation": [
-                {
-                    "input": item["user"],
-                    "output": f"{item['style']}\n{item['assistant']}"
-                }
-            ]
-        }
-        target_data.append(new_convo)
-    return target_data
-# 从文件读取源数据
-with open("style_chat_data1.json", "r", encoding="utf-8") as f:
-    source_data = json.load(f)
+# 输入 xtuner 格式数据路径
+input_file = "/Users/yee/vscode/DailyCode/demo/EmotionalDialogueModel /data/style_chat_data_20250707_214748.json"
+# 输出 llamafactory 格式路径
+output_file = "./data/train_data.json"
 
-# 执行转换
-converted_data = convert_format(source_data)
+with open(input_file, "r", encoding="utf-8") as f:
+    raw_data = json.load(f)
 
-# 写入目标文件
-with open("output.json", "w", encoding="utf-8") as f:
-    json.dump(converted_data, f, ensure_ascii=False, indent=2)
+converted = []
+
+for item in raw_data:
+    instruction = item.get("user", "").strip()
+    style = item.get("style", "").strip()
+    response = item.get("assistant", "").strip()
+
+    # 如果有风格字段，将其拼接在输出开头
+    if style:
+        output = f"{style}\n{response}"
+    else:
+        output = response
+
+    converted.append({
+        "instruction": instruction,
+        "input": "",
+        "output": output
+    })
+
+with open(output_file, "w", encoding="utf-8") as f:
+    json.dump(converted, f, ensure_ascii=False, indent=2)
+
+print(f"✅ 转换完成，共 {len(converted)} 条，输出文件：{output_file}")
