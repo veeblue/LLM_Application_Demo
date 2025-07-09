@@ -1,9 +1,9 @@
 import json
 
 # 输入 xtuner 格式数据路径
-input_file = "/Users/yee/vscode/DailyCode/demo/EmotionalDialogueModel /data/style_chat_data_20250707_214748.json"
+input_file = "./data/style_chat_data_20250707_214748.json"
 # 输出 llamafactory 格式路径
-output_file = "./data/train_data.json"
+output_file = "./data/train_data_history.json"
 
 with open(input_file, "r", encoding="utf-8") as f:
     raw_data = json.load(f)
@@ -13,18 +13,27 @@ converted = []
 for item in raw_data:
     instruction = item.get("user", "").strip()
     style = item.get("style", "").strip()
-    response = item.get("assistant", "").strip()
-
-    # 如果有风格字段，将其拼接在输出开头
+    output = item.get("assistant", "").strip()
+    # 拼接风格
     if style:
-        output = f"{style}\n{response}"
-    else:
-        output = response
-
+        output = f"{style}\n{output}"
+    # 处理 history
+    history = []
+    if "history" in item and isinstance(item["history"], list):
+        for turn in item["history"]:
+            if isinstance(turn, dict):
+                u = turn.get("user", "").strip()
+                a = turn.get("assistant", "").strip()
+            elif isinstance(turn, list) and len(turn) == 2:
+                u, a = turn
+            else:
+                continue
+            history.append([u, a])
     converted.append({
         "instruction": instruction,
         "input": "",
-        "output": output
+        "output": output,
+        "history": history
     })
 
 with open(output_file, "w", encoding="utf-8") as f:

@@ -3,11 +3,11 @@ __pycache__/
 *.py[codz]
 *$py.class
 
-Legal_Assistant/chroma_db
-Legal_Assistant/data/*
-Legal_Assistant/storage
-Legal_Assistant/models/*
-Legal_Assistant/__pycache__
+LegalAssistant/chroma_db
+LegalAssistant/data/*
+LegalAssistant/storage
+LegalAssistant/models/*
+LegalAssistant/__pycache__
 
 # C extensions
 *.so
